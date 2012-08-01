@@ -1,19 +1,46 @@
-<html>
-    <head>
-      <title>{{ title }}</title>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="/house/wiki/static/lib/bootstrap/css/bootstrap.css"/>
+    <link rel="stylesheet" href="/house/wiki/static/lib/bootstrap/css/bootstrap-responsive.css"/>
     <script type='text/javascript' src='/house/wiki/static/js/jquery.js'></script>
     <script type='text/javascript' src='/house/wiki/static/js/showdown.js'></script>
-    </head>
-    <body><div style='display:none' id='content'>{{ content }}</div><div id='output'></div><hr><button id='edit'>edit</button>
-    <script>
-      var path_name = "{{ title }}";
-      $('#edit').click(function() {
-          window.location = '/house/wiki/edit/' + path_name
-      })
-      var new_html = (new Showdown.converter()).makeHtml($('#content').text());
-      new_html = new_html.replace(/\b([A-Z][0-9a-z]+){2,}\b/, "<a href='/house/wiki/view/$1'>$1</a>");
-      new_html = new_html.replace(/\[\[([A-Za-z0-9]+)\]\]/, "<a href='/house/wiki/view/$1'>$1</a>");
-      $('#output').html(new_html);
-    </script>
+    <script type='text/javascript' src='/house/wiki/static/lib/bootstrap/js/bootstrap.js'></script>
+  </head>
+    <body>
+      <div class="navbar">
+	<div class="navbar-inner">
+	  <a class="brand" href="/house/wiki/view/Main">The House Wiki</a>
+	  <ul class="nav">
+	    <li class="active">
+	      <a href="#">{{ title }}</a>
+	    </li>
+	    <li><a href="#" id='edit'>Edit</a></li>
+	    <li><a href="/house/wiki/view/SyntaxHelp">Syntax Help</a></li>
+	  </ul>
+	</div>
+      </div>
+      <div class="container">
+	<div style='display:none' id='content'>{{ content }}</div>
+	<div class="row">
+	  <div class="span12">
+	    <div id='output'></div>
+	  </div>
+	</div>
+	<script>
+	  var path_name = "{{ title }}";
+	  $('#edit').click(function() {
+            window.location = '/house/wiki/edit/' + path_name
+	  })
+	  var new_html = (new Showdown.converter()).makeHtml($('#content').text());
+	  // ugly:
+	  // we're going through the DOM every time here to avoid replacing attributes in the HTML text.
+	  $('#output').html(new_html);
+	  $('#output').html($('#output').html().replace(/\[\[(([A-Z]|[a-z]|[0-9])+)\]\]/g, "<a href='/house/wiki/view/$1'>$1</a>"));
+	  $('#output').html($('#output').html().replace(/\b(([A-Z]([0-9]|[a-z])+){2,})\b/g, "<a href='/house/wiki/view/$1'>$1</a>"));
+	</script>
+      </div>
+    </body>
 </body>
 </html>

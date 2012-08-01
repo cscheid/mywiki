@@ -1,33 +1,57 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
   <head>
-    <title>Editing {{ title }} ...</title>
-  <script type='text/javascript' src='/house/wiki/static/js/jquery.js'></script>
-  <script type='text/javascript' src='/house/wiki/static/js/showdown.js'></script>
+    <title>Editing {{ title }}...</title>
+    <link rel="stylesheet" href="/house/wiki/static/lib/bootstrap/css/bootstrap.css"/>
+    <link rel="stylesheet" href="/house/wiki/static/lib/bootstrap/css/bootstrap-responsive.css"/>
+    <script type='text/javascript' src='/house/wiki/static/js/jquery.js'></script>
+    <script type='text/javascript' src='/house/wiki/static/js/showdown.js'></script>
+    <script type='text/javascript' src='/house/wiki/static/lib/bootstrap/js/bootstrap.js'></script>
   </head>
   <body>
-    <textarea style='width:100%;height:30%' id='text-content'>{{ content }}</textarea>
-    <hr>
-    <button id='save'>save</button>
-    <button id='cancel'>cancel</button>
-    <hr>
-    <h1>Preview:</h1>
-    <hr>
-    <div id='preview'></div>
-    <script>
-      var path_name = "{{ title }}";
-      $('#cancel').click(function() { window.location = '/house/wiki/view/' + path_name; });
-      $('#save').click(function() {
-          $.post('/house/wiki/save/' + path_name,
-                 { data: $('#text-content').val() },
-                 function(data) {
-                     window.location = '/house/wiki/view/' + path_name;
-                 });
-          });
-      window.setInterval(function() {
-          var new_html = (new Showdown.converter()).makeHtml($('#text-content').val());
-          new_html = new_html.replace(/\b([A-Z][0-9a-z]+){2,}\b/, "<a href='/house/wiki/view/$1'>$1</a>");
-          new_html = new_html.replace(/\[\[([A-Za-z0-9]+)\]\]/, "<a href='/house/wiki/view/$1'>$1</a>");
-          $('#preview').html(new_html);
-      }, 500);
-    </script>
-</body></html>
+    <div class="navbar">
+      <div class="navbar-inner">
+	<a class="brand" href="/house/wiki/view/Main">The House Wiki</a>
+	<ul class="nav">
+	  <li class="active">
+	    <a href="#">{{ title }}</a>
+	  </li>
+	  <li><a href="#" id='save'>Save</a></li>
+	  <li><a href="#" id='cancel'>Cancel</a></li>
+	  <li><a href="/house/wiki/view/SyntaxHelp">Syntax Help</a></li>
+	</ul>
+      </div>
+    </div>
+    <div class="container">
+      <div style='display:none' id='content'>{{ content }}</div>
+      <div class="row">
+	<div class="span6">
+	  <textarea style='width:100%' id='text-content'>{{ content }}</textarea>
+	</div>
+	<div class="span6">
+	  <div id='preview' style='background-color:#ddd'></div>
+	</div>
+      </div>
+      <script>
+	$("#text-content").css('height', ($(window).height() - 60)+ "px");
+	  var path_name = "{{ title }}";
+	  $('#cancel').click(function() { window.location = '/house/wiki/view/' + path_name; });
+	  $('#save').click(function() {
+              $.post('/house/wiki/save/' + path_name,
+                     { data: $('#text-content').val() },
+                     function(data) {
+                         window.location = '/house/wiki/view/' + path_name;
+                     });
+              });
+	  window.setInterval(function() {
+              var new_html = (new Showdown.converter()).makeHtml($('#text-content').val());
+              // ugly:
+              // we're going through the DOM every time here to avoid replacing attributes in the HTML text.
+              $('#preview').html(new_html);
+              $('#preview').html($('#preview').html().replace(/\[\[(([A-Z]|[a-z]|[0-9])+)\]\]/g, "<a href='/house/wiki/view/$1'>$1</a>"));
+              $('#preview').html($('#preview').html().replace(/\b(([A-Z]([0-9]|[a-z])+){2,})\b/g, "<a href='/house/wiki/view/$1'>$1</a>"));
+	  }, 500);
+      </script>
+    </div>
+  </body>
+</html>
