@@ -1,18 +1,18 @@
 <html>
     <head>
       <title>{{ title }}</title>
-    <script type='text/javascript' src='/static/js/jquery.js'></script>
-    <script type='text/javascript' src='/static/js/showdown.js'></script>
+    <script type='text/javascript' src='/house/wiki/static/js/jquery.js'></script>
+    <script type='text/javascript' src='/house/wiki/static/js/showdown.js'></script>
     </head>
     <body><div style='display:none' id='content'>{{ content }}</div><div id='output'></div><hr><button id='edit'>edit</button>
     <script>
       var path_name = "{{ title }}";
       $('#edit').click(function() {
-          window.location = '/edit/' + path_name
+          window.location = '/house/wiki/edit/' + path_name
       })
       var new_html = (new Showdown.converter()).makeHtml($('#content').text());
-      new_html = new_html.replace(/\b([A-Z][0-9a-z]+){2,}\b/, "<a href='/view/$1'>$1</a>");
-      new_html = new_html.replace(/\[\[([A-Za-z0-9]+)\]\]/, "<a href='/view/$1'>$1</a>");
+      new_html = new_html.replace(/\b([A-Z][0-9a-z]+){2,}\b/, "<a href='/house/wiki/view/$1'>$1</a>");
+      new_html = new_html.replace(/\[\[([A-Za-z0-9]+)\]\]/, "<a href='/house/wiki/view/$1'>$1</a>");
       $('#output').html(new_html);
     </script>
 </body>

@@ -23,11 +23,11 @@ def save_file(filename, content):
 
 @app.route('/')
 def hello_world():
-    return '<a href="/static/test.html">Go here instead</a>.'
+    return '<a href="/house/wiki/view/Main">Go here instead</a>.'
 
 @app.route('/view/')
 def main_view():
-    return redirect('/view/Main')
+    return redirect('/house/wiki/view/Main')
 
 view_template = env.get_template('view.html')
 edit_template = env.get_template('edit.html')
@@ -36,9 +36,11 @@ edit_template = env.get_template('edit.html')
 def view(filename):
     try:
         f = file(safe_join('data', filename))
+        print safe_join('data', filename)
+        content = f.read()
     except IOError:
-        return redirect('/edit/%s' % filename)
-    return view_template.render(title=filename, content=f.read())
+        return redirect('/house/wiki/edit/%s' % filename)
+    return view_template.render(title=filename, content=content)
 
 @app.route('/edit/<path:filename>')
 def edit(filename):
@@ -58,4 +60,4 @@ def save(filename):
 
 if __name__ == '__main__':
     app.debug = True
-    app.run()
+    app.run(port=8300)
