@@ -43,7 +43,7 @@ def view(filename):
         window.location = '/edit/' + '%s'
     })
     var new_html = (new Showdown.converter()).makeHtml($('#content').text());
-    $(output).html(new_html);
+    $('#output').html(new_html);
     </script>
 </body></html>""" % (filename, escape(f.read()), filename)
 
@@ -57,11 +57,17 @@ def edit(filename):
         f = file(path)
     return """<html><head><title>Editing %s...</title>
     <script type='text/javascript' src='/static/js/jquery.js'></script>
+    <script type='text/javascript' src='/static/js/showdown.js'></script>
     </head>
     <body>
-    <textarea id='text-content'>%s</textarea>
+    <textarea style='width:100%%;height:30%%' id='text-content'>%s</textarea>
+    <hr>
     <button id='save'>save</button>
     <button id='cancel'>cancel</button>
+    <hr>
+    <h1>Preview:</h1>
+    <hr>
+    <div id='preview'></div>
     <script>
     $('#save').click(function() {
         $.post('/save/%s',
@@ -70,6 +76,10 @@ def edit(filename):
                    window.location = '/view/%s';
                });
     })
+    window.setInterval(function() {
+        var new_html = (new Showdown.converter()).makeHtml($('#text-content').val());
+        $('#preview').html(new_html);
+    }, 500);
     </script>
 </body></html>""" % (filename, escape(f.read()), filename, filename)
 
