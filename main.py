@@ -1,11 +1,14 @@
 #!/usr/bin/env python
 
 from flask import Flask, request, jsonify, safe_join, escape, redirect
+from jinja2 import Environment, FileSystemLoader
+
 import json
 import sys
 import os
 
 app = Flask(__name__)
+env = Environment(loader=FileSystemLoader('templates'))
 
 ##############################################################################
 
@@ -26,26 +29,29 @@ def hello_world():
 def main_view():
     return redirect('/view/Main')
 
+view_template = env.get_template('view.html')
+
 @app.route('/view/<path:filename>')
 def view(filename):
     try:
         f = file(safe_join('data', filename))
     except IOError:
         return redirect('/edit/%s' % filename)
-    return """<html>
-    <head><title>%s</title>
-    <script type='text/javascript' src='/static/js/jquery.js'></script>
-    <script type='text/javascript' src='/static/js/showdown.js'></script>
-    </head>
-    <body><div style='display:none' id='content'>%s</div><div id='output'></div><hr><button id='edit'>edit</button>
-    <script>
-    $('#edit').click(function() {
-        window.location = '/edit/' + '%s'
-    })
-    var new_html = (new Showdown.converter()).makeHtml($('#content').text());
-    $('#output').html(new_html);
-    </script>
-</body></html>""" % (filename, escape(f.read()), filename)
+    return view_template.render(title=filename, content=f.read())
+# """<html>
+#     <head><title>%s</title>
+#     <script type='text/javascript' src='/static/js/jquery.js'></script>
+#     <script type='text/javascript' src='/static/js/showdown.js'></script>
+#     </head>
+#     <body><div style='display:none' id='content'>%s</div><div id='output'></div><hr><button id='edit'>edit</button>
+#     <script>
+#     $('#edit').click(function() {
+#         window.location = '/edit/' + '%s'
+#     })
+#     var new_html = (new Showdown.converter()).makeHtml($('#content').text());
+#     $('#output').html(new_html);
+#     </script>
+# </body></html>""" % (filename, escape(f.read()), filename)
 
 @app.route('/edit/<path:filename>')
 def edit(filename):
