@@ -6,6 +6,7 @@ from jinja2 import Environment, FileSystemLoader
 import json
 import sys
 import os
+import codecs
 
 app = Flask(__name__)
 env = Environment(loader=FileSystemLoader('templates'))
@@ -14,7 +15,7 @@ env = Environment(loader=FileSystemLoader('templates'))
 
 def save_file(filename, content):
     path = safe_join("data", filename)
-    f = file(path, 'w')
+    f = codecs.open(path, 'w', 'utf-8')
     f.write(content)
     f.close()
     os.system('cd data; git add %s; git commit -m"checkin"' % filename)
@@ -23,7 +24,7 @@ def save_file(filename, content):
 
 @app.route('/')
 def hello_world():
-    return '<a href="/house/wiki/view/Main">Go here instead</a>.'
+    return redirect('/house/wiki/view/Main')
 
 @app.route('/view/')
 def main_view():
@@ -35,8 +36,7 @@ edit_template = env.get_template('edit.html')
 @app.route('/view/<path:filename>')
 def view(filename):
     try:
-        f = file(safe_join('data', filename))
-        print safe_join('data', filename)
+        f = codecs.open(safe_join('data', filename), 'r', 'utf-8')
         content = f.read()
     except IOError:
         return redirect('/house/wiki/edit/%s' % filename)
@@ -46,10 +46,10 @@ def view(filename):
 def edit(filename):
     path = safe_join('data', filename)
     try:
-        f = file(path)
+        f = codecs.open(path, 'r', 'utf-8')
     except IOError:
         save_file(filename, '')
-        f = file(path)
+        f = codecs.open(path, 'r', 'utf-8')
     return edit_template.render(title=filename, content=f.read())
 
 @app.route('/save/<path:filename>', methods=['POST'])
@@ -59,5 +59,4 @@ def save(filename):
     return "OK"
 
 if __name__ == '__main__':
-    app.debug = True
     app.run(port=8300)
