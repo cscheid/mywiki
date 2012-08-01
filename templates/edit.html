@@ -1,0 +1,32 @@
+<html>
+  <head>
+    <title>Editing {{ title }} ...</title>
+  <script type='text/javascript' src='/static/js/jquery.js'></script>
+  <script type='text/javascript' src='/static/js/showdown.js'></script>
+  </head>
+  <body>
+    <textarea style='width:100%;height:30%' id='text-content'>{{ content }}</textarea>
+    <hr>
+    <button id='save'>save</button>
+    <button id='cancel'>cancel</button>
+    <hr>
+    <h1>Preview:</h1>
+    <hr>
+    <div id='preview'></div>
+    <script>
+      var path_name = "{{ title }}";
+      $('#save').click(function() {
+      $.post('/save/' + path_name,
+             { data: $('#text-content').val() },
+             function(data) {
+                 window.location = '/view/' + path_name;
+             });
+      });
+      window.setInterval(function() {
+          var new_html = (new Showdown.converter()).makeHtml($('#text-content').val());
+          new_html = new_html.replace(/\b([A-Z][0-9a-z]+){2,}\b/, "<a href='/view/$1'>$1</a>");
+          new_html = new_html.replace(/\[\[([A-Za-z0-9]+)\]\]/, "<a href='/view/$1'>$1</a>");
+          $('#preview').html(new_html);
+      }, 500);
+    </script>
+</body></html>

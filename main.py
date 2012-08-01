@@ -30,6 +30,7 @@ def main_view():
     return redirect('/view/Main')
 
 view_template = env.get_template('view.html')
+edit_template = env.get_template('edit.html')
 
 @app.route('/view/<path:filename>')
 def view(filename):
@@ -38,20 +39,6 @@ def view(filename):
     except IOError:
         return redirect('/edit/%s' % filename)
     return view_template.render(title=filename, content=f.read())
-# """<html>
-#     <head><title>%s</title>
-#     <script type='text/javascript' src='/static/js/jquery.js'></script>
-#     <script type='text/javascript' src='/static/js/showdown.js'></script>
-#     </head>
-#     <body><div style='display:none' id='content'>%s</div><div id='output'></div><hr><button id='edit'>edit</button>
-#     <script>
-#     $('#edit').click(function() {
-#         window.location = '/edit/' + '%s'
-#     })
-#     var new_html = (new Showdown.converter()).makeHtml($('#content').text());
-#     $('#output').html(new_html);
-#     </script>
-# </body></html>""" % (filename, escape(f.read()), filename)
 
 @app.route('/edit/<path:filename>')
 def edit(filename):
@@ -61,33 +48,7 @@ def edit(filename):
     except IOError:
         save_file(filename, '')
         f = file(path)
-    return """<html><head><title>Editing %s...</title>
-    <script type='text/javascript' src='/static/js/jquery.js'></script>
-    <script type='text/javascript' src='/static/js/showdown.js'></script>
-    </head>
-    <body>
-    <textarea style='width:100%%;height:30%%' id='text-content'>%s</textarea>
-    <hr>
-    <button id='save'>save</button>
-    <button id='cancel'>cancel</button>
-    <hr>
-    <h1>Preview:</h1>
-    <hr>
-    <div id='preview'></div>
-    <script>
-    $('#save').click(function() {
-        $.post('/save/%s',
-               { data: $('#text-content').val() },
-               function(data) {
-                   window.location = '/view/%s';
-               });
-    })
-    window.setInterval(function() {
-        var new_html = (new Showdown.converter()).makeHtml($('#text-content').val());
-        $('#preview').html(new_html);
-    }, 500);
-    </script>
-</body></html>""" % (filename, escape(f.read()), filename, filename)
+    return edit_template.render(title=filename, content=f.read())
 
 @app.route('/save/<path:filename>', methods=['POST'])
 def save(filename):
