@@ -2,6 +2,7 @@
 <html lang="en">
   <head>
     <title>{{ title }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/house/wiki/static/lib/bootstrap/css/bootstrap.css"/>
     <link rel="stylesheet" href="/house/wiki/static/lib/bootstrap/css/bootstrap-responsive.css"/>
     <script type='text/javascript' src='/house/wiki/static/js/jquery.js'></script>
@@ -37,8 +38,14 @@
 	  // ugly:
 	  // we're going through the DOM every time here to avoid replacing attributes in the HTML text.
 	  $('#output').html(new_html);
-	  $('#output').html($('#output').html().replace(/\[\[(([A-Z]|[a-z]|[0-9])+)\]\]/g, "<a href='/house/wiki/view/$1'>$1</a>"));
-	  $('#output').html($('#output').html().replace(/\b(([A-Z]([0-9]|[a-z])+){2,})\b/g, "<a href='/house/wiki/view/$1'>$1</a>"));
+	  $('#output :not(:has(*))').html(function(idx,oldText){
+              //idx is the index of the current element in the JQUERY_OBJECT
+	      return oldText.replace(/\[\[(([A-Z]|[a-z]|[0-9])+)\]\]/g, "<a href='/house/wiki/view/$1'>$1</a>");
+          });
+	  $('#output :not(:has(*))').html(function(idx,oldText){
+              //idx is the index of the current element in the JQUERY_OBJECT
+	      return oldText.replace(/\b(([A-Z]([0-9]|[a-z])+){2,})\b/g, "<a href='/house/wiki/view/$1'>$1</a>");
+          });
 	</script>
       </div>
     </body>
