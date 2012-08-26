@@ -11,6 +11,8 @@ import codecs
 app = Flask(__name__)
 env = Environment(loader=FileSystemLoader('templates'))
 
+from conf import Conf
+
 ##############################################################################
 
 def save_file(filename, content):
@@ -24,11 +26,11 @@ def save_file(filename, content):
 
 @app.route('/')
 def hello_world():
-    return redirect('/house/wiki/view/Main')
+    return redirect('%s/view/Main' % Conf["prefix"])
 
 @app.route('/view/')
 def main_view():
-    return redirect('/house/wiki/view/Main')
+    return redirect('%s/view/Main' % Conf["prefix"])
 
 view_template = env.get_template('view.html')
 edit_template = env.get_template('edit.html')
@@ -39,8 +41,8 @@ def view(filename):
         f = codecs.open(safe_join('data', filename), 'r', 'utf-8')
         content = f.read()
     except IOError:
-        return redirect('/house/wiki/edit/%s' % filename)
-    return view_template.render(title=filename, content=content)
+        return redirect('%s/edit/%s' % (Conf["prefix"], filename))
+    return view_template.render(title=filename, content=content, **Conf)
 
 @app.route('/edit/<path:filename>')
 def edit(filename):
@@ -50,7 +52,7 @@ def edit(filename):
     except IOError:
         save_file(filename, '')
         f = codecs.open(path, 'r', 'utf-8')
-    return edit_template.render(title=filename, content=f.read())
+    return edit_template.render(title=filename, content=f.read(), **Conf)
 
 @app.route('/save/<path:filename>', methods=['POST'])
 def save(filename):
@@ -58,5 +60,6 @@ def save(filename):
     save_file(filename, content)
     return "OK"
 
+app.debug = True
 if __name__ == '__main__':
     app.run(port=8300)

@@ -3,23 +3,23 @@
   <head>
     <title>Editing {{ title }}...</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/house/wiki/static/lib/bootstrap/css/bootstrap.css"/>
-    <link rel="stylesheet" href="/house/wiki/static/lib/bootstrap/css/bootstrap-responsive.css"/>
-    <script type='text/javascript' src='/house/wiki/static/js/jquery.js'></script>
-    <script type='text/javascript' src='/house/wiki/static/js/showdown.js'></script>
-    <script type='text/javascript' src='/house/wiki/static/lib/bootstrap/js/bootstrap.js'></script>
+    <link rel="stylesheet" href="{{ prefix }}/static/lib/bootstrap/css/bootstrap.css"/>
+    <link rel="stylesheet" href="{{ prefix }}/static/lib/bootstrap/css/bootstrap-responsive.css"/>
+    <script type='text/javascript' src='{{ prefix }}/static/js/jquery.js'></script>
+    <script type='text/javascript' src='{{ prefix }}/static/js/showdown.js'></script>
+    <script type='text/javascript' src='{{ prefix }}/static/lib/bootstrap/js/bootstrap.js'></script>
   </head>
   <body>
     <div class="navbar">
       <div class="navbar-inner">
-	<a class="brand" href="/house/wiki/view/Main">The House Wiki</a>
+	<a class="brand" href="{{ prefix }}/view/Main">{{ wikiname }}</a>
 	<ul class="nav">
 	  <li class="active">
 	    <a href="#">{{ title }}</a>
 	  </li>
 	  <li><a href="#" id='save'>Save</a></li>
 	  <li><a href="#" id='cancel'>Cancel</a></li>
-	  <li class="nav-collapse"><a href="/house/wiki/view/SyntaxHelp">Syntax Help</a></li>
+	  <li class="nav-collapse"><a href="{{ prefix }}/view/SyntaxHelp">Syntax Help</a></li>
 	</ul>
       </div>
     </div>
@@ -36,12 +36,12 @@
       <script>
 	$("#text-content").css('height', ($(window).height() - 60)+ "px");
 	  var path_name = "{{ title }}";
-	  $('#cancel').click(function() { window.location = '/house/wiki/view/' + path_name; });
+	  $('#cancel').click(function() { window.location = '{{ prefix }}/view/' + path_name; });
 	  $('#save').click(function() {
-              $.post('/house/wiki/save/' + path_name,
+              $.post('{{ prefix }}/save/' + path_name,
                      { data: $('#text-content').val() },
                      function(data) {
-                         window.location = '/house/wiki/view/' + path_name;
+                         window.location = '{{ prefix }}/view/' + path_name;
                      });
               });
 	  window.setInterval(function() {
@@ -51,11 +51,11 @@
 	      $('#preview').html(new_html);
 	      $('#preview :not(:has(*))').html(function(idx,oldText){
                   //idx is the index of the current element in the JQUERY_OBJECT
-    	          return oldText.replace(/\[\[(([A-Z]|[a-z]|[0-9])+)\]\]/g, "<a href='/house/wiki/view/$1'>$1</a>");
+    	          return oldText.replace(/\[\[(([A-Z]|[a-z]|[0-9])+)\]\]/g, "<a href='{{ prefix }}/view/$1'>$1</a>");
               });
 	      $('#preview :not(:has(*))').html(function(idx,oldText){
                   //idx is the index of the current element in the JQUERY_OBJECT
-	          return oldText.replace(/\b(([A-Z]([0-9]|[a-z])+){2,})\b/g, "<a href='/house/wiki/view/$1'>$1</a>");
+	          return oldText.replace(/\b(([A-Z]([0-9]|[a-z])+){2,})\b/g, "<a href='{{ prefix }}/view/$1'>$1</a>");
               });
 	  }, 500);
       </script>
