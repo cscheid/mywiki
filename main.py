@@ -1,17 +1,19 @@
 #!/usr/bin/env python
 
-from flask import Flask, request, jsonify, safe_join, escape, redirect
+from flask import Flask, request, jsonify, safe_join, escape, redirect, Response
 from jinja2 import Environment, FileSystemLoader
 
+import git
 import json
 import sys
-import os
 import codecs
 
 app = Flask(__name__)
 env = Environment(loader=FileSystemLoader('templates'))
 
 from conf import Conf
+
+repo = git.Repo('data')
 
 ##############################################################################
 
@@ -20,7 +22,8 @@ def save_file(filename, content):
     f = codecs.open(path, 'w', 'utf-8')
     f.write(content)
     f.close()
-    os.system('cd data; git add %s; git commit -m"checkin"' % filename)
+    repo.index.add([filename])
+    repo.index.commit("checkin")
 
 ##############################################################################
 
@@ -34,6 +37,7 @@ def main_view():
 
 view_template = env.get_template('view.html')
 edit_template = env.get_template('edit.html')
+version_template = env.get_template('versions.html')
 
 @app.route('/view/<path:filename>')
 def view(filename):
@@ -54,11 +58,32 @@ def edit(filename):
         f = codecs.open(path, 'r', 'utf-8')
     return edit_template.render(title=filename, content=f.read(), **Conf)
 
+@app.route('/versions/<path:filename>')
+def show_versions(filename):
+    result = repo.git.log(filename).split('\n')
+    hashes = list(l[7:] for l in result if l.startswith('commit '))
+    dates = list(l[6:] for l in result if l.startswith('Date: '))
+    commits = []
+    
+    for (hash, date) in zip(hashes, dates):
+        commits.append({
+            "hash": hash,
+            "date": date
+            })
+    return version_template.render(title=filename, commits=commits, **Conf)
+    # return str(repo.refs.log.RefLog(filename))
+
+@app.route('/get_version/<path:filename>/<path:commit>')
+def get_file(filename, commit):
+    result = repo.git.show(commit + ":" + filename)
+    return Response(result, mimetype='text/plain')
+
 @app.route('/save/<path:filename>', methods=['POST'])
 def save(filename):
     content = request.form.get('data')
     save_file(filename, content)
     return "OK"
 
+app.debug = True
 if __name__ == '__main__':
     app.run(port=8300)
