@@ -60,6 +60,5 @@ def save(filename):
     save_file(filename, content)
     return "OK"
 
-app.debug = True
 if __name__ == '__main__':
     app.run(port=8300)
