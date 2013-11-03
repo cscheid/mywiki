@@ -6,48 +6,39 @@
     <link rel="stylesheet" href="{{ prefix }}/static/lib/bootstrap/css/bootstrap.css"/>
     <link rel="stylesheet" href="{{ prefix }}/static/lib/bootstrap/css/bootstrap-responsive.css"/>
     <script type='text/javascript' src='{{ prefix }}/static/js/jquery.js'></script>
+    <script type='text/javascript' src='{{ prefix }}/static/js/mywiki.js'></script>
     <script type='text/javascript' src='{{ prefix }}/static/js/showdown.js'></script>
     <script type='text/javascript' src='{{ prefix }}/static/lib/bootstrap/js/bootstrap.js'></script>
   </head>
     <body>
       <div class="navbar">
-	<div class="navbar-inner">
-	  <a class="brand" href="{{ prefix }}/view/Main">{{ wikiname }}</a>
-	  <ul class="nav">
-	    <li class="active">
-	      <a href="#">{{ title }}</a>
-	    </li>
-	    <li><a href="#" id='edit'>Edit</a></li>
-	    <li><a href="{{ prefix }}/versions/{{ title }}">Previous versions</a></li>
-	    <li><a href="{{ prefix }}/view/SyntaxHelp">Syntax Help</a></li>
-	  </ul>
-	</div>
+        <div class="navbar-inner">
+          <a class="brand" href="{{ prefix }}/view/Main">{{ wikiname }}</a>
+          <ul class="nav">
+            <li class="active">
+              <a href="#">{{ title }}</a>
+            </li>
+            <li><a href="#" id='edit'>Edit</a></li>
+            <li><a href="{{ prefix }}/versions/{{ title }}">Previous versions</a></li>
+            <li><a href="{{ prefix }}/view/SyntaxHelp">Syntax Help</a></li>
+          </ul>
+        </div>
       </div>
       <div class="container">
-	<div style='display:none' id='content'>{{ content }}</div>
-	<div class="row">
-	  <div class="span12">
-	    <div id='output'></div>
-	  </div>
-	</div>
-	<script>
-	  var path_name = "{{ title }}";
-	  $('#edit').click(function() {
+        <div style='display:none' id='content'>{{ content }}</div>
+        <div class="row">
+          <div class="span12">
+            <div id='output'></div>
+          </div>
+        </div>
+        <script>
+          var path_name = "{{ title }}";
+          $('#edit').click(function() {
             window.location = '{{ prefix }}/edit/' + path_name
-	  })
-	  var new_html = (new Showdown.converter()).makeHtml($('#content').text());
-	  // ugly:
-	  // we're going through the DOM every time here to avoid replacing attributes in the HTML text.
-	  $('#output').html(new_html);
-	  $('#output :not(:has(*))').html(function(idx,oldText){
-              //idx is the index of the current element in the JQUERY_OBJECT
-	      return oldText.replace(/\[\[(([A-Z]|[a-z]|[0-9])+)\]\]/g, "<a href='{{ prefix }}/view/$1'>$1</a>");
-          });
-	  $('#output :not(:has(*))').html(function(idx,oldText){
-              //idx is the index of the current element in the JQUERY_OBJECT
-	      return oldText.replace(/\b(([A-Z]([0-9]|[a-z])+){2,})\b/g, "<a href='{{ prefix }}/view/$1'>$1</a>");
-          });
-	</script>
+          })
+          var new_html = (new Showdown.converter()).makeHtml($('#content').text());
+	  wikify("#output", new_html);
+        </script>
       </div>
     </body>
 </body>

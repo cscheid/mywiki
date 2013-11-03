@@ -1,6 +1,6 @@
 Conf = {
-    "prefix": "",
-    "wikiname": "Choose a name for your wiki!"
+    "prefix": "/house/wiki",
+    "wikiname": "The House Wiki"
     }
 
     

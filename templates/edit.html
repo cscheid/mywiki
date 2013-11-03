@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="{{ prefix }}/static/lib/bootstrap/css/bootstrap-responsive.css"/>
     <script type='text/javascript' src='{{ prefix }}/static/js/jquery.js'></script>
     <script type='text/javascript' src='{{ prefix }}/static/js/showdown.js'></script>
+    <script type='text/javascript' src='{{ prefix }}/static/js/mywiki.js'></script>
     <script type='text/javascript' src='{{ prefix }}/static/lib/bootstrap/js/bootstrap.js'></script>
   </head>
   <body>
@@ -34,30 +35,20 @@
 	</div>
       </div>
       <script>
-	$("#text-content").css('height', ($(window).height() - 60)+ "px");
-	  var path_name = "{{ title }}";
-	  $('#discard').click(function() { window.location = '{{ prefix }}/view/' + path_name; });
-	  $('#save').click(function() {
+          $("#text-content").css('height', ($(window).height() - 60)+ "px");
+          var path_name = "{{ title }}";
+          $('#discard').click(function() { window.location = '{{ prefix }}/view/' + path_name; });
+          $('#save').click(function() {
               $.post('{{ prefix }}/save/' + path_name,
                      { data: $('#text-content').val() },
                      function(data) {
                          window.location = '{{ prefix }}/view/' + path_name;
                      });
               });
-	  window.setInterval(function() {
+          window.setInterval(function() {
               var new_html = (new Showdown.converter()).makeHtml($('#text-content').val());
-              // ugly:
-              // we're going through the DOM every time here to avoid replacing attributes in the HTML text.
-	      $('#preview').html(new_html);
-	      $('#preview :not(:has(*))').html(function(idx,oldText){
-                  //idx is the index of the current element in the JQUERY_OBJECT
-    	          return oldText.replace(/\[\[(([A-Z]|[a-z]|[0-9])+)\]\]/g, "<a href='{{ prefix }}/view/$1'>$1</a>");
-              });
-	      $('#preview :not(:has(*))').html(function(idx,oldText){
-                  //idx is the index of the current element in the JQUERY_OBJECT
-	          return oldText.replace(/\b(([A-Z]([0-9]|[a-z])+){2,})\b/g, "<a href='{{ prefix }}/view/$1'>$1</a>");
-              });
-	  }, 500);
+              wikify("#preview", new_html);
+          }, 500);
       </script>
     </div>
   </body>
