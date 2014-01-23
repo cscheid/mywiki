@@ -47,7 +47,7 @@
               });
           window.setInterval(function() {
               var new_html = (new Showdown.converter()).makeHtml($('#text-content').val());
-              wikify("#preview", new_html);
+              wikify("#preview", new_html, "{{ prefix }}");
           }, 500);
       </script>
     </div>

@@ -5,16 +5,16 @@ function getTextNodesIn(el) {
     });
 };
 
-function wikify(selector, content) {
+function wikify(selector, content, prefix) {
     // ugly:
     // we're going through the DOM every time here to avoid replacing attributes in the HTML text.
     $(selector).html(content);
     getTextNodesIn(selector).replaceWith(function(){
         //idx is the index of the current element in the JQUERY_OBJECT
-        return this.data.replace(/\[\[(([A-Z]|[a-z]|[0-9])+)\]\]/g, "<a href='{{ prefix }}/view/$1'>$1</a>");
+        return this.data.replace(/\[\[(([A-Z]|[a-z]|[0-9])+)\]\]/g, "<a href='" + prefix + "/view/$1'>$1</a>");
     });
     getTextNodesIn(selector).replaceWith(function(){
         //idx is the index of the current element in the JQUERY_OBJECT
-        return this.data.replace(/\b(([A-Z]([0-9]|[a-z])+){2,})\b/g, "<a href='{{ prefix }}/view/$1'>$1</a>");
+        return this.data.replace(/\b(([A-Z]([0-9]|[a-z])+){2,})\b/g, "<a href='" + prefix + "/view/$1'>$1</a>");
     });
 }

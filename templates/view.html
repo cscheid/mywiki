@@ -37,7 +37,7 @@
             window.location = '{{ prefix }}/edit/' + path_name
           })
           var new_html = (new Showdown.converter()).makeHtml($('#content').text());
-	  wikify("#output", new_html);
+	  wikify("#output", new_html, "{{ prefix }}");
         </script>
       </div>
     </body>
