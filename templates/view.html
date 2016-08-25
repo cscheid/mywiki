@@ -36,7 +36,7 @@
             window.location = '{{ prefix }}/edit/' + path_name
           });
 	  $.ajax({
-	      url: "/get/" + path_name,
+	      url: "{{ prefix }}/get/" + path_name,
 	      dataType: "text"
 	  }).done(function(data) {
               var new_html = (new Showdown.converter()).makeHtml(data);
