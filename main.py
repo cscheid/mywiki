@@ -39,6 +39,7 @@ view_template = env.get_template('view.html')
 edit_template = env.get_template('edit.html')
 version_template = env.get_template('versions.html')
 
+
 @app.route('/view/<path:filename>')
 def view(filename):
     try:
@@ -46,7 +47,7 @@ def view(filename):
         content = f.read()
     except IOError:
         return redirect('%s/edit/%s' % (Conf["prefix"], filename))
-    return view_template.render(title=filename, content=content, **Conf)
+    return view_template.render(title=filename, content=repr(content)[1:], **Conf)
 
 @app.route('/edit/<path:filename>')
 def edit(filename):
@@ -72,6 +73,15 @@ def show_versions(filename):
             })
     return version_template.render(title=filename, commits=commits, **Conf)
     # return str(repo.refs.log.RefLog(filename))
+
+@app.route('/get/<path:filename>')
+def get(filename):
+    try:
+        f = codecs.open(safe_join('data', filename), 'r', 'utf-8')
+        content = f.read()
+    except IOError:
+        return Response("Not found", status=404, mimetype="text/plain")
+    return Response(content, status=200, mimetype="text/plain")
 
 @app.route('/get_version/<path:filename>/<path:commit>')
 def get_file(filename, commit):

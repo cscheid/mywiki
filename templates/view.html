@@ -25,19 +25,23 @@
         </div>
       </div>
       <div class="container">
-        <div style='display:none' id='content'>{{ content }}</div>
         <div class="row">
           <div class="span12">
             <div id='output'></div>
           </div>
         </div>
         <script>
-          var path_name = "{{ title }}";
+	  var path_name = "{{ title }}";
           $('#edit').click(function() {
             window.location = '{{ prefix }}/edit/' + path_name
-          })
-          var new_html = (new Showdown.converter()).makeHtml($('#content').text());
-	  wikify("#output", new_html, "{{ prefix }}");
+          });
+	  $.ajax({
+	      url: "/get/" + path_name,
+	      dataType: "text"
+	  }).done(function(data) {
+              var new_html = (new Showdown.converter()).makeHtml(data);
+              wikify("#output", new_html, "{{ prefix }}");
+	  });
         </script>
       </div>
     </body>
